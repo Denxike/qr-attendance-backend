@@ -27,7 +27,8 @@ public class CorsFilter extends OncePerRequestFilter {
         String origin = request.getHeader("Origin");
         List<String> allowedOrigins = Arrays.asList(
                 "http://localhost:3000",
-               "https://qr-attendance-frontend-u6jp.vercel.app/login"  // Will update after Vercel deployment
+               "https://qr-attendance-frontend-u6jp.vercel.app/login",
+		"https://www.qr-attendance-frontend-u6jp.vercel.app/login"  // Will update after Vercel deployment
         );
 
         if (allowedOrigins.contains(origin)) {
