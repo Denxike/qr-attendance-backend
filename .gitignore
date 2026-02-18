@@ -1,4 +1,18 @@
 HELP.md
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Build
+/build
+/target
+
+# IDE
+.idea
+.vscode
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -35,3 +49,5 @@ out/
 
 ### VS Code ###
 .vscode/
+Task
+
