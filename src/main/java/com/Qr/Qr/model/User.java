@@ -1,5 +1,5 @@
 package com.Qr.Qr.model;
-
+ 
 
 import com.Qr.Qr.model.enums.Role;
 import jakarta.persistence.*;
@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "\user\"" , indexes = {
+@Table(name = "\"user\"" , indexes = {
         @Index(name="idx_email", columnList = "email"),
         @Index(name="idx_role", columnList = "role")
 })
