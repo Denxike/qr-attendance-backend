@@ -10,11 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
-//@Component
-@Order(Ordered.HIGHEST_PRECEDENCE)  // ← Runs FIRST before anything else
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter extends OncePerRequestFilter {
 
     @Override
@@ -24,22 +22,11 @@ public class CorsFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String origin = request.getHeader("Origin");
-        List<String> allowedOrigins = Arrays.asList(
-                "http://localhost:3000",
-		"http://localhost:5173",
-		"http://localhost:8080",
-               "https://qr-attendance-frontend-u6jp.vercel.app/login",
-		"https://www.qr-attendance-frontend-u6jp.vercel.app/login"  // Will update after Vercel deployment
-        );
-
-        if (allowedOrigins.contains(origin)) {
-            response.setHeader("Access-Control-Allow-Origin", origin);
-        }
-
+        // Allow all origins for now
+        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, Origin, X-Requested-With");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Credentials", "false");
         response.setHeader("Access-Control-Max-Age", "3600");
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
