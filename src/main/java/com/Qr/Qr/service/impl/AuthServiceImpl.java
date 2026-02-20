@@ -1,5 +1,6 @@
 package com.Qr.Qr.service.impl;
 
+import com.Qr.Qr.security.JwtUtils;
 import com.Qr.Qr.dto.request.LoginRequest;
 import com.Qr.Qr.dto.response.LoginResponse;
 import com.Qr.Qr.exception.InvalidCredentialsException;
@@ -31,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final JwtUtils jwtUtils;
 
     @Override
     public LoginResponse login(LoginRequest request) {
