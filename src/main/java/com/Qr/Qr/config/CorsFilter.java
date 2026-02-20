@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-@Component
+//@Component
 @Order(Ordered.HIGHEST_PRECEDENCE)  // ← Runs FIRST before anything else
 public class CorsFilter extends OncePerRequestFilter {
 
@@ -27,6 +27,8 @@ public class CorsFilter extends OncePerRequestFilter {
         String origin = request.getHeader("Origin");
         List<String> allowedOrigins = Arrays.asList(
                 "http://localhost:3000",
+		"http://localhost:5173",
+		"http://localhost:8080",
                "https://qr-attendance-frontend-u6jp.vercel.app/login",
 		"https://www.qr-attendance-frontend-u6jp.vercel.app/login"  // Will update after Vercel deployment
         );
