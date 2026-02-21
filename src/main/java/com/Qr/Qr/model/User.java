@@ -43,11 +43,11 @@ public class User {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 	
-@OneToOne(mappedBy = "user")
+@OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
 @JsonIgnore
 private Student student;
 
-@OneToOne(mappedBy = "user")
+@OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
 @JsonIgnore
 private Teacher teacher;
 }

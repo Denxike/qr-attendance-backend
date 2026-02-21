@@ -45,15 +45,12 @@ public class CourseController {
             @PathVariable Long courseId) {
         return ResponseEntity.ok(courseService.getCourseById(courseId));
     }
-    // Student browses available courses
-    @GetMapping("/students/{studentId}/available-courses")
-    @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<List<CourseResponse>> getAvailableCourses(
-            @PathVariable Long studentId) {
-        List<Course> courses = courseRepository.findAvailableCoursesForStudent(studentId);
-        return ResponseEntity.ok(courseMapper.toResponseList(courses));
-    }
-
+   
+      
+@GetMapping("/courses/available/{studentId}")
+public ResponseEntity<List<CourseResponse>> getAvailableCourses(@PathVariable Long studentId) {
+    return ResponseEntity.ok(courseService.getAvailableCourses(studentId));
+}
     // Student self-enrolls
     @PostMapping("/students/{studentId}/enroll/{courseId}")
     @PreAuthorize("hasRole('STUDENT')")

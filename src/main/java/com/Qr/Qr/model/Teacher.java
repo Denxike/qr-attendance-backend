@@ -23,7 +23,8 @@ public class Teacher {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id",nullable = false,unique = true)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @Column(name = "employee_id", nullable = false, unique = true)

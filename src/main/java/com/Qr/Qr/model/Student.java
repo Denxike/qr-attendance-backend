@@ -23,6 +23,7 @@ public class Student {
 
     @OneToOne
     @JoinColumn(name="user_id", nullable = false,unique = true)
+   @JsonIgnore
     private User user;
 
     @Column(name="student_id",nullable = false, unique = true)
@@ -38,10 +39,10 @@ public class Student {
     @Column(name= "phone_number")
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "student",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "student")
     @JsonIgnore
-    private List<StudentCourseEnrollment> enrollments = new ArrayList<>();
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentCourseEnrollment> enrollments;
+    @OneToMany(mappedBy = "student")
     @JsonIgnore
-    private List<Attendance> attendances = new ArrayList<>();
+    private List<Attendance> attendances;
 }
