@@ -17,7 +17,7 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
             "WHERE e.student.id = :studentId " +
             "AND e.status = 'ENROLLED'")
     List<Course> findCoursesByStudentId(@Param("studentId") Long studentId);
-
+ List<Course> findByDepartmentId(Long departmentId);	
     Boolean existsByCourseCode(String courseCode);
     Long countByDepartmentId(Long departmentId);
     Long countByTeacherId(Long teacherId);

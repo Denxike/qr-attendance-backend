@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Component
 public class CourseMapper {
 
-    public CourseResponse toResponse(Course course) {
+    public static CourseResponse toResponse(Course course) {
         CourseResponse response = new CourseResponse();
 
         response.setId(course.getId());

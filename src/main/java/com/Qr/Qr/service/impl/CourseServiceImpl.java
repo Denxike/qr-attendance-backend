@@ -69,9 +69,21 @@ public List<CourseResponse> getAvailableCourses(Long studentId) {
             .map(enrollment -> enrollment.getCourse().getId())
             .collect(Collectors.toSet());
     
-    return departmentCourses.stream()
+return departmentCourses.stream()
             .filter(course -> !enrolledCourseIds.contains(course.getId()))
-            .map(CourseMapper::toResponse)
+            .map(course -> {
+                CourseResponse response = new CourseResponse();
+                response.setId(course.getId());
+                response.setCourseCode(course.getCourseCode());
+                response.setCourseName(course.getCourseName());
+                response.setDescription(course.getDescription());
+                response.setCredits(course.getCredits());
+                response.setSemester(course.getSemester());
+                response.setTeacherId(course.getTeacher() != null ? course.getTeacher().getId() : null);
+                response.setDepartmentId(course.getDepartment() != null ? course.getDepartment().getId() : null);
+                response.setActive(course.getIsActive());
+                return response;
+            })
             .collect(Collectors.toList());
 }
 }
