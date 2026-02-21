@@ -1,10 +1,14 @@
 package com.Qr.Qr.service.impl;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import com.Qr.Qr.dto.response.CourseRequest;
 import com.Qr.Qr.dto.response.CourseResponse;
 import com.Qr.Qr.exception.ResourceNotFoundException;
 import com.Qr.Qr.mapper.CourseMapper;
-import com.Qr.Qr.model.Course;
-import com.Qr.Qr.repository.CourseRepository;
+import com.Qr.Qr.model.*;
+import com.Qr.Qr.repository.*;
 import com.Qr.Qr.service.CourseService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +24,7 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
-
+    private final StudentRepository studentRepository;
     @Override
     public List<CourseResponse> getCoursesByTeacher(Long teacherId) {
         log.info("Fetching courses for teacher: {}", teacherId);
@@ -49,4 +53,26 @@ public class CourseServiceImpl implements CourseService {
 
         return courseMapper.toResponse(course);
     }
+   @Override
+public List<CourseResponse> getAvailableCourses(Long studentId) {
+    Student student = studentRepository.findById(studentId)
+            .orElseThrow(() -> new RuntimeException("Student not found"));
+    
+    Department department = student.getDepartment();
+    if (department == null) {
+        return Collections.emptyList();
+    }
+    
+    List<Course> departmentCourses = courseRepository.findByDepartmentId(department.getId());
+    
+    // Filter out courses already enrolled
+    Set<Long> enrolledCourseIds = student.getEnrollments().stream()
+            .map(enrollment -> enrollment.getCourse().getId())
+            .collect(Collectors.toSet());
+    
+    return departmentCourses.stream()
+            .filter(course -> !enrolledCourseIds.contains(course.getId()))
+            .map(CourseMapper::toResponse)
+            .collect(Collectors.toList());
+}
 }
