@@ -43,7 +43,7 @@ public class CourseMapper {
 
     public List<CourseResponse> toResponseList(List<Course> courses) {
         return courses.stream()
-                .map(Coursemapper::toResponse)
+                .map(CourseMapper::toResponse)
                 .collect(Collectors.toList());
     }
 }

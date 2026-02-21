@@ -22,6 +22,6 @@ public class CourseResponse {
     private String departmentName;
 
     private Boolean isActive;
-    private Integer totalEnrollments;
+    private Integer enrollStudents;
 
 }

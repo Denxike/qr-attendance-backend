@@ -81,7 +81,7 @@ return departmentCourses.stream()
                 response.setSemester(course.getSemester());
                 response.setTeacherId(course.getTeacher() != null ? course.getTeacher().getId() : null);
                 response.setDepartmentId(course.getDepartment() != null ? course.getDepartment().getId() : null);
-                response.setActive(course.getIsActive());
+                response.setIsActive(course.getIsActive());
                 return response;
             })
             .collect(Collectors.toList());
