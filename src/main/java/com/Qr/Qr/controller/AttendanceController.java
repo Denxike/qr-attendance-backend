@@ -54,10 +54,10 @@ public class AttendanceController {
         return ResponseEntity.ok(
                 attendanceService.getAttendanceByStudentAndCourse(studentId, courseId));
     }
-//    @GetMapping("/student/{studentId}")
-//    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN')")
-//    public ResponseEntity<List<AttendanceResponse>> getStudentAttendance(@PathVariable Long studentId) {
-//        List<AttendanceResponse> attendance = attendanceService.getAttendanceByStudent(studentId);
-//        return ResponseEntity.ok(attendance);
-//    }
+    @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN')")
+    public ResponseEntity<List<AttendanceResponse>> getStudentAttendance(@PathVariable Long studentId) {
+        List<AttendanceResponse> attendance = attendanceService.getAttendanceByStudent(studentId);
+        return ResponseEntity.ok(attendance);
+   }
 }
