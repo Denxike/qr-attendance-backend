@@ -3,7 +3,6 @@ package com.Qr.Qr.service.impl;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.Qr.Qr.dto.response.CourseRequest;
 import com.Qr.Qr.dto.response.CourseResponse;
 import com.Qr.Qr.exception.ResourceNotFoundException;
 import com.Qr.Qr.mapper.CourseMapper;
