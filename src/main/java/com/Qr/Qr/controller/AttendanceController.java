@@ -39,13 +39,6 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.getAttendanceBySession(sessionId));
     }
 
-    @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN')")
-    public ResponseEntity<List<AttendanceResponse>> getByStudent(
-            @PathVariable Long studentId) {
-        return ResponseEntity.ok(attendanceService.getAttendanceByStudent(studentId));
-    }
-
     @GetMapping("/student/{studentId}/course/{courseId}")
     @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN')")
     public ResponseEntity<List<AttendanceResponse>> getByStudentAndCourse(
