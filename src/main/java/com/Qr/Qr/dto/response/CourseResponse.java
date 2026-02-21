@@ -14,14 +14,10 @@ public class CourseResponse {
     private String description;
     private Integer credits;
     private String semester;
-
     private Long teacherId;
     private String teacherName;
-
     private Long departmentId;
     private String departmentName;
-
+    private Integer enrolledStudents;
     private Boolean isActive;
-    private Integer enrollStudents;
-
 }
