@@ -1,6 +1,6 @@
 package com.Qr.Qr.model;
  
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.Qr.Qr.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,4 +42,12 @@ public class User {
     @UpdateTimestamp
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
+	
+@OneToOne(mappedBy = "user")
+@JsonIgnore
+private Student student;
+
+@OneToOne(mappedBy = "user")
+@JsonIgnore
+private Teacher teacher;
 }
