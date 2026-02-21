@@ -36,9 +36,9 @@ public class TeacherServiceImpl implements TeacherService {
                     "Email "+request.getEmail()+" is already registered"
             );
         }
-        Department department = departmentRepository.findByDepartmentId(request.getDepartmentId())
+        Department department = departmentRepository.findById(request.getId())
                 .orElseThrow(()-> new ResourceNotFoundException(
-                        "Department with ID "+ request.getDepartmentId()+" not found."
+                        "Department with ID "+ request.getId()+" not found."
                 ));
         User user = new User();
         user.setRole(Role.TEACHER);
