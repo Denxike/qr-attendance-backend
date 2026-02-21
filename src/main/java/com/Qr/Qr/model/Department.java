@@ -22,25 +22,8 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="department_id",nullable = false,unique = true)
-    private Long departmentId;
-
-    @Column(name="department_name",nullable = false)
+  @Column(name="department_name",nullable = false)
     private String departmentName;
-
-    @ManyToOne
-    @JoinColumn(name="head_of_dapartment")
-    private Teacher headOfDepartment;
-
-    @CreationTimestamp
-    @Column(name = "created_at",updatable = false)
-    private LocalDateTime createdAt;
+@Column(name="description")
     private String description;
-
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-    private List<Student> students = new ArrayList<>();
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-    private List<Teacher> teachers = new ArrayList<>();
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-    private List<Course> courses = new ArrayList<>();
 }
