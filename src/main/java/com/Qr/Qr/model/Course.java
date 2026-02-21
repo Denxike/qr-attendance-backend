@@ -1,5 +1,6 @@
 package com.Qr.Qr.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.Qr.Qr.model.enums.AttendanceStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -58,9 +59,11 @@ import java.util.List;
 
 
         @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
         private List<StudentCourseEnrollment> enrollments = new ArrayList<>();
 
         @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
         private List<QrSession> qrSessions = new ArrayList<>();
 
         @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)

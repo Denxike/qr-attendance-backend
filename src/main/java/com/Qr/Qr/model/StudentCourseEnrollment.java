@@ -1,5 +1,7 @@
 package com.Qr.Qr.model;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.Qr.Qr.model.enums.EnrollmentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,10 +33,12 @@ public class StudentCourseEnrollment {
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
+	@JsonIgnore
     private Student student;
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
+	@JsonIgnore
     private Course course;
 
     @CreationTimestamp
