@@ -34,13 +34,16 @@ public class CourseMapper {
             response.setDepartmentId(course.getDepartment().getId());
             response.setDepartmentName(course.getDepartment().getDepartmentName());
         }
-
+	response.setIsActive(course.getIsActive());  
+    if (course.getEnrollments() != null) {
+        response.setEnrolledStudents(course.getEnrollments().size());
+    }
         return response;
     }
 
     public List<CourseResponse> toResponseList(List<Course> courses) {
         return courses.stream()
-                .map(this::toResponse)
+                .map(Coursemapper::toResponse)
                 .collect(Collectors.toList());
     }
 }
