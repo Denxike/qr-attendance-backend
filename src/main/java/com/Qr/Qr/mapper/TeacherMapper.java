@@ -25,7 +25,7 @@ public class TeacherMapper {
         response.setId(teacher.getId());
         response.setEmail(teacher.getUser().getEmail());
         response.setFullName(teacher.getUser().getFullName());
-        response.setDepartmentId(teacher.getDepartment().getDepartmentId());
+        response.setDepartmentId(teacher.getDepartment().getId());
         response.setPhoneNumber(teacher.getPhoneNumber());
         response.setEmployeeId(teacher.getEmployeeId());
         return response;
