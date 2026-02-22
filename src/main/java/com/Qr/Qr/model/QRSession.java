@@ -38,6 +38,13 @@ public class QRSession {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+   @ManyToOne
+@JoinColumn(name = "teacher_id")
+private Teacher teacher; 
+
+private LocalDateTime startTime;
+
+private int totalScans; 
 
     @OneToMany(mappedBy = "qrSession", cascade = CascadeType.ALL)
     @JsonIgnore

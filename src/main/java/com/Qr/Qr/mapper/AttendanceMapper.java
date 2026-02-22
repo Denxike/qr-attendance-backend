@@ -30,7 +30,7 @@ public class AttendanceMapper {
     }
     public List<AttendanceResponse> toResponseList(List<Attendance> attendances) {
         return attendances.stream()
-                .map(this::toResponse)
+                .map(attendance -> toResponse(attendance))
                 .collect(Collectors.toList());
     }
 }
