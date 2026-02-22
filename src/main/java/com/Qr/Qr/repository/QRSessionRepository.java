@@ -11,5 +11,6 @@ public interface QRSessionRepository extends JpaRepository<QrSession,Long> {
     Optional<QrSession> findById(Long id);
     Optional<QrSession> findByCourseIdAndIsActiveTrue(Long courseId);
     Boolean existsBySessionToken(String sessionToken);
+List<QRSession> findByCourse_Id(Long courseId);
 }
 

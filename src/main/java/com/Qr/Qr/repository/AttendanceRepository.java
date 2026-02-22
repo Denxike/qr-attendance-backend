@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance,Long> {
-    boolean existsByStudentIdAndQrSessionId(Student student,QRSession qrSession);
+    boolean existsByStudentIdAndQrSessionId(Long studentId,Long qrSessionId);
 
     List<Attendance> findByStudentId(Long studentId);
 

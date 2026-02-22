@@ -66,51 +66,35 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         return attendanceMapper.toResponseList(attendances);
     }
-    @Override
-    public AttendanceResponse markAttendance(MarkAttendanceRequest request) {
-        QrSession session = qrSessionRepository.findBySessionToken(request.getSessionToken())
-                .orElseThrow(()-> new InvalidQRCodeException("Invalid QR code"));
 
-        if (!session.getIsActive()| LocalDateTime.now().isAfter(session.getExpiryTime()) ){
-            throw new InvalidQRCodeException("Qr code is no longer active");
-        }
-        if (session.getExpiryTime().isBefore(LocalDateTime.now())){
-            throw new InvalidQRCodeException("QR code has expired");
-        }
+@Override
+@Transactional
+public AttendanceResponse markAttendance(MarkAttendanceRequest request) {
+    Student student = studentRepository.findById(request.getStudentId())
+            .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        Student student = studentRepository.findById(request.getStudentId())
-                .orElseThrow(()-> new ResourceNotFoundException("Student","id",request.getStudentId()));
-        if (!enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(
-                student.getId(),
-                session.getCourse().getId(),
-                EnrollmentStatus.ENROLLED
-        )){
-            throw new UnauthorizedException("you are not enrolled in this course");
-        }
-        if (attendanceRepository.existsByStudentIdAndQrSessionId(student.getId(), session.getId())){
-            throw new DuplicateAttendanceException("You have already marked attendance for this session");
-        }
+    QRSession session = qrSessionRepository.findBySessionToken(request.getQrToken())
+            .orElseThrow(() -> new RuntimeException("Invalid QR code"));
 
-        AttendanceStatus status = AttendanceStatus.PRESENT;
-        LocalDateTime now = LocalDateTime.now();
-
-        if(now.isAfter(session.getStartTime().plusMinutes(10))) {
-            status = AttendanceStatus.LATE;
-        }
-
-        Attendance attendance = new Attendance();
-        attendance.setStudent(student);
-        attendance.setQrSession(session);
-        attendance.setStatus(status);
-
-        Attendance savedAttendance = attendanceRepository.save(attendance);
-
-        session.setTotalScans(session.getTotalScans() + 1);
-        qrSessionRepository.save(session);
-
-        return attendanceMapper.toResponse(savedAttendance);
+    if (!session.getIsActive() || LocalDateTime.now().isAfter(session.getExpiryTime())) {
+        throw new RuntimeException("QR code has expired");
     }
 
+    if (attendanceRepository.existsByStudent_IdAndQrSession_Id(student.getId(), session.getId())) {
+        throw new RuntimeException("Attendance already marked for this session");
+    }
+
+    String status = "PRESENT";
+
+    Attendance attendance = new Attendance();
+    attendance.setStudent(student);
+    attendance.setQrSession(session);
+    attendance.setStatus(status);
+
+    Attendance savedAttendance = attendanceRepository.save(attendance);
+
+    return AttendanceMapper.toResponse(savedAttendance);
+}
     @Override
     public AttendanceResponse getAttendanceById(Long id) {
         Attendance attendance = attendanceRepository.findById(id)
