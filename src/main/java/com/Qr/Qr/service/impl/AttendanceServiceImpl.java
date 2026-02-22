@@ -8,10 +8,15 @@ import com.Qr.Qr.exception.ResourceNotFoundException;
 import com.Qr.Qr.exception.UnauthorizedException;
 import com.Qr.Qr.mapper.AttendanceMapper;
 import com.Qr.Qr.model.Attendance;
-import com.Qr.Qr.model.QrSession;
+import com.Qr.Qr.model.QRSession;
+import com.Qr.Qr.model.QRSession;
+import com.Qr.Qr.model.QRSession;
 import com.Qr.Qr.model.Student;
+import com.Qr.Qr.model.QRSession;
 import com.Qr.Qr.model.enums.AttendanceStatus;
+import com.Qr.Qr.model.QRSession;
 import com.Qr.Qr.model.enums.EnrollmentStatus;
+import com.Qr.Qr.model.QRSession;
 import com.Qr.Qr.repository.AttendanceRepository;
 import com.Qr.Qr.repository.QRSessionRepository;
 import com.Qr.Qr.repository.StudentCourseEnrollmentRepository;
@@ -70,7 +75,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 @Override
 @Transactional
 public AttendanceResponse markAttendance(MarkAttendanceRequest request) {
-    Student student = studentRepository.findById(request.getStudentId())
+    Student student = studentRepository.findById(Long.parseLong(request.getStudentId()))
             .orElseThrow(() -> new RuntimeException("Student not found"));
 
     QRSession session = qrSessionRepository.findBySessionToken(request.getQrToken())

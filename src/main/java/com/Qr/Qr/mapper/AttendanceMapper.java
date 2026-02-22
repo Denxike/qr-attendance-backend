@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class AttendanceMapper {
-    public AttendanceResponse toResponse(Attendance attendance){
+    public static AttendanceResponse toResponse(Attendance attendance){
         AttendanceResponse response = new AttendanceResponse();
 
         response.setId(attendance.getId());
