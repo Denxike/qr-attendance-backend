@@ -17,14 +17,14 @@ public class AttendanceMapper {
         response.setStudentId(attendance.getStudent().getId());
         response.setStudentRegistrationId(attendance.getStudent().getStudentId());
         response.setStudentName(attendance.getStudent().getUser().getFullName());
-        response.setSessionId(attendance.getId());
+        response.setSessionId(attendance.getQrSession().getId());
         response.setSessionName(attendance.getQrSession().getSessionName());
-        response.setCourseId(attendance.getCourse().getId());
-        response.setCourseCode(attendance.getCourse().getCourseCode());
-        response.setCourseName(attendance.getCourse().getCourseName());
+        response.setCourseId(attendance.getQrSession().getCourse().getId());
+        response.setCourseCode(attendance.getQrSession().getCourse().getCourseCode());
+        response.setCourseName(attendance.getQrSession().getCourse().getCourseName());
 
         response.setMarkedAt(attendance.getMarkedAt());
-        response.setStatus(attendance.getStatus().name());
+        response.setStatus(attendance.getStatus());
 
         return  response;
     }

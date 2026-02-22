@@ -9,7 +9,7 @@ import com.Qr.Qr.model.QrSession;
 import com.Qr.Qr.model.Teacher;
 import com.Qr.Qr.repository.AttendanceRepository;
 import com.Qr.Qr.repository.CourseRepository;
-import com.Qr.Qr.repository.QrSessionRepository;
+import com.Qr.Qr.repository.QRSessionRepository;
 import com.Qr.Qr.repository.TeacherRepository;
 import com.Qr.Qr.service.QrCodeService;
 import com.Qr.Qr.util.QRCodeUtil;
@@ -28,7 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class QRCodeServiceImpl implements QrCodeService {
-    private final QrSessionRepository qrSessionRepository;
+    private final QRSessionRepository qrSessionRepository;
     private final CourseRepository courseRepository;
     private final TeacherRepository teacherRepository;
     private final AttendanceRepository attendanceRepository;

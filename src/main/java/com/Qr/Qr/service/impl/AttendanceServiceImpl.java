@@ -13,7 +13,7 @@ import com.Qr.Qr.model.Student;
 import com.Qr.Qr.model.enums.AttendanceStatus;
 import com.Qr.Qr.model.enums.EnrollmentStatus;
 import com.Qr.Qr.repository.AttendanceRepository;
-import com.Qr.Qr.repository.QrSessionRepository;
+import com.Qr.Qr.repository.QRSessionRepository;
 import com.Qr.Qr.repository.StudentCourseEnrollmentRepository;
 import com.Qr.Qr.repository.StudentRepository;
 import com.Qr.Qr.service.AttendanceService;
@@ -31,7 +31,7 @@ import java.util.List;
 @Slf4j
 public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceRepository attendanceRepository;
-    private final QrSessionRepository qrSessionRepository;
+    private final QRSessionRepository qrSessionRepository;
     private final StudentRepository studentRepository;
     private final StudentCourseEnrollmentRepository enrollmentRepository;
     private final AttendanceMapper attendanceMapper;
@@ -68,17 +68,17 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
     @Override
     public AttendanceResponse markAttendance(MarkAttendanceRequest request) {
-        QrSession session = qrSessionRepository.findBySessionToken(request.getQrToken())
+        QrSession session = qrSessionRepository.findBySessionToken(request.getSessionToken())
                 .orElseThrow(()-> new InvalidQRCodeException("Invalid QR code"));
 
-        if (!session.getIsActive()){
+        if (!session.getIsActive()| LocalDateTime.now().isAfter(session.getExpiryTime()) ){
             throw new InvalidQRCodeException("Qr code is no longer active");
         }
         if (session.getExpiryTime().isBefore(LocalDateTime.now())){
             throw new InvalidQRCodeException("QR code has expired");
         }
 
-        Student student = studentRepository.findByStudentId(request.getStudentId())
+        Student student = studentRepository.findById(request.getStudentId())
                 .orElseThrow(()-> new ResourceNotFoundException("Student","id",request.getStudentId()));
         if (!enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(
                 student.getId(),
@@ -100,7 +100,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         Attendance attendance = new Attendance();
         attendance.setStudent(student);
-        attendance.setCourse(session.getCourse());
         attendance.setQrSession(session);
         attendance.setStatus(status);
 
