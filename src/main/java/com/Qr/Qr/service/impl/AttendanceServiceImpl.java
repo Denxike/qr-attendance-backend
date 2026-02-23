@@ -66,8 +66,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         log.info("Fetching attendance for student: {} in course: {}",
                 studentId, courseId);
 
-        List<Attendance> attendances = attendanceRepository
-                .findByStudentIdAndCourseId(studentId, courseId);
+	List<Attendance> attendances = attendanceRepository.findByStudent_Id(studentId).stream()
+    .filter(a -> a.getQrSession() != null && 
+                 a.getQrSession().getCourse() != null && 
+                 a.getQrSession().getCourse().getId().equals(courseId))
+    .collect(Collectors.toList());
 
         return attendanceMapper.toResponseList(attendances);
     }
