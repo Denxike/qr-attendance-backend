@@ -41,7 +41,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         log.info("Fetching attendance for session: {}", sessionId);
 
         List<Attendance> attendances = attendanceRepository
-                .findByQRSessionId(sessionId);
+                .findByQrSessionId(sessionId);
 
         return attendanceMapper.toResponseList(attendances);
     }
