@@ -1,6 +1,6 @@
 package com.Qr.Qr.repository;
 
-import com.Qr.Qr.model.QRSession;
+import com.Qr.Qr.model.QrSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,8 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface QRSessionRepository extends JpaRepository<QRSession, Long> {
-    Optional<QRSession> findBySessionToken(String sessionToken);
+    Optional<QrSession> findBySessionToken(String sessionToken);
     boolean existsBySessionToken(String sessionToken);
-    List<QRSession> findByCourse_Id(Long courseId);
-    Optional<QRSession> findByCourseIdAndIsActiveTrue(Long courseId);
+    List<QrSession> findByCourse_Id(Long courseId);
+    Optional<QrSession> findByCourseIdAndIsActiveTrue(Long courseId);
 }
