@@ -46,7 +46,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         log.info("Fetching attendance for session: {}", sessionId);
 
         List<Attendance> attendances = attendanceRepository
-                .findByQrSessionId(sessionId);
+                .findByQRSessionId(sessionId);
 
         return attendanceMapper.toResponseList(attendances);
     }
@@ -67,7 +67,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         log.info("Fetching attendance for student: {} in course: {}",
                 studentId, courseId);
 
-	List<Attendance> attendances = attendanceRepository.findByStudent_Id(studentId).stream()
+	List<Attendance> attendances = attendanceRepository.findByStudentId(studentId).stream()
     .filter(a -> a.getQrSession() != null && 
                  a.getQrSession().getCourse() != null && 
                  a.getQrSession().getCourse().getId().equals(courseId))
