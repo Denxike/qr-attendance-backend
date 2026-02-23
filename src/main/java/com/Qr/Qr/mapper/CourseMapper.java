@@ -20,24 +20,12 @@ public class CourseMapper {
         response.setCredits(course.getCredits());
         response.setSemester(course.getSemester());
         response.setIsActive(course.getIsActive());
-
-        // Teacher info (null check)
-        if (course.getTeacher() != null) {
             response.setTeacherId(course.getTeacher().getId());
-            if (course.getTeacher().getUser() != null) {
                 response.setTeacherName(course.getTeacher().getUser().getFullName());
-            }
-        }
-
-        // Department info (null check)
-        if (course.getDepartment() != null) {
             response.setDepartmentId(course.getDepartment().getId());
             response.setDepartmentName(course.getDepartment().getDepartmentName());
-        }
 	response.setIsActive(course.getIsActive());  
-    if (course.getEnrollments() != null) {
         response.setEnrolledStudents(course.getEnrollments().size());
-    }
         return response;
     }
 
