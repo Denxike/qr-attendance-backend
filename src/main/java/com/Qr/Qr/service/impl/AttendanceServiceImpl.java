@@ -1,5 +1,6 @@
 package com.Qr.Qr.service.impl;
 
+import java.util.stream.Collectors;
 import com.Qr.Qr.dto.request.MarkAttendanceRequest;
 import com.Qr.Qr.dto.response.AttendanceResponse;
 import com.Qr.Qr.exception.DuplicateAttendanceException;
