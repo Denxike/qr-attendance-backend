@@ -36,15 +36,17 @@ public class QRCodeServiceImpl implements QrCodeService {
 
     @Override
     public QrGenerationResponse generateQRCode(QrGenerationRequest request, Long teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId)
+	String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Teacher teacher = teacherRepository.findByUserEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher","id",teacherId));
+	long teacherId = teacher.getId();
         log.info("Authenticated teacherId = {}", teacherId);
 
 
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course","Id",request.getCourseId()));
         log.info("Course.teacherId = {}", course.getTeacher().getId());
-        if(!course.getTeacher().getId().equals(teacherId)){
+        if(!course.getTeacher().getId().equals(teacher.getId())){
            throw new UnauthorizedException("You are not authorized to generateQR for this course");
         }
         qrSessionRepository.findByCourseIdAndIsActiveTrue(course.getId())
