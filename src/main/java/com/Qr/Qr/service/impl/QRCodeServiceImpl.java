@@ -5,7 +5,7 @@ import com.Qr.Qr.dto.response.QrGenerationResponse;
 import com.Qr.Qr.exception.ResourceNotFoundException;
 import com.Qr.Qr.exception.UnauthorizedException;
 import com.Qr.Qr.model.Course;
-import com.Qr.Qr.model.QRSession;
+import com.Qr.Qr.model.QrSession;
 import com.Qr.Qr.model.Teacher;
 import com.Qr.Qr.repository.AttendanceRepository;
 import com.Qr.Qr.repository.CourseRepository;
@@ -60,7 +60,7 @@ public class QRCodeServiceImpl implements QrCodeService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiryTime = now.plusMinutes(request.getDurationMinutes());
 
-        QRSession session = new QRSession();
+        QrSession session = new QRSession();
         session.setSessionToken(token);
         session.setCourse(course);
         session.setTeacher(teacher);
@@ -96,7 +96,7 @@ public class QRCodeServiceImpl implements QrCodeService {
     }
     @Override
     public QrGenerationResponse getSessionDetails(Long sessionId) {
-        QRSession session = qrSessionRepository.findById(sessionId)
+        QrSession session = qrSessionRepository.findById(sessionId)
         .orElseThrow(()->new ResourceNotFoundException("Qr Session","id",sessionId));
 
         int scanCount = attendanceRepository.findByQRSessionId(sessionId).size();
@@ -119,7 +119,7 @@ public class QRCodeServiceImpl implements QrCodeService {
     }
     @Override
     public void deactivateSession(Long sessionId, Long teacherId) {
-        QRSession session = qrSessionRepository.findById(sessionId)
+        QrSession session = qrSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Qr Session","id",sessionId));
         if (!session.getTeacher().getId().equals(teacherId)){
             throw new UnauthorizedException("You are not authorized to deactivate this session");
