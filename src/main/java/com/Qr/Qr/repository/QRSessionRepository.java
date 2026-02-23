@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface QRSessionRepository extends JpaRepository<QRSession, Long> {
+public interface QRSessionRepository extends JpaRepository<QrSession, Long> {
     Optional<QrSession> findBySessionToken(String sessionToken);
     boolean existsBySessionToken(String sessionToken);
     List<QrSession> findByCourse_Id(Long courseId);
