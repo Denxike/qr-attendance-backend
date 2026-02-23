@@ -1,5 +1,8 @@
 package com.Qr.Qr.service.impl;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import com.Qr.Qr.dto.request.QrGenerationRequest;
 import com.Qr.Qr.dto.response.QrGenerationResponse;
 import com.Qr.Qr.exception.ResourceNotFoundException;
@@ -35,6 +38,7 @@ public class QRCodeServiceImpl implements QrCodeService {
     private final QRCodeUtil qrCodeUtil;
 
     @Override
+    @Transactional
     public QrGenerationResponse generateQRCode(QrGenerationRequest request, Long teacherId) {
 	String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Teacher teacher = teacherRepository.findByUserEmail(email)
