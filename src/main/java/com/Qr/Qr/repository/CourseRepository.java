@@ -27,4 +27,6 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
             "(SELECT e.course.id FROM StudentCourseEnrollment e " +
             "WHERE e.student.id = :studentId AND e.status = 'ENROLLED')")
     List<Course> findAvailableCoursesForStudent(@Param("studentId") Long studentId);
+	@Query("SELECT c FROM Course c LEFT JOIN FETCH c.enrollments")
+List<Course> findAllWithEnrollments();
 }

@@ -67,8 +67,9 @@ public class AdminServiceImpl implements AdminService{
     // ==================== COURSES ====================
 
     @Override
+    @Transactional(readOnly = true)
     public List<CourseResponse> getAllCourses() {
-        return courseMapper.toResponseList(courseRepository.findAll());
+        return courseMapper.toResponseList(courseRepository.findAllWithEnrollments());
     }
 
     @Override
