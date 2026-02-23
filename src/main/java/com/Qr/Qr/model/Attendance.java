@@ -26,7 +26,7 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name = "qr_session_id")
-    private QRSession qrSession;
+    private QrSession qrSession;
 
     @Column(name = "marked_at")
     private LocalDateTime markedAt;
