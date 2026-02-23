@@ -10,7 +10,7 @@ import com.Qr.Qr.exception.UnauthorizedException;
 import com.Qr.Qr.mapper.AttendanceMapper;
 import com.Qr.Qr.model.Attendance;
 import com.Qr.Qr.model.QRSession;
-import com.Qr.Qr.model.QRSession;
+import com.Qr.Qr.model.QrSession;
 import com.Qr.Qr.model.QRSession;
 import com.Qr.Qr.model.Student;
 import com.Qr.Qr.model.QRSession;
@@ -82,7 +82,7 @@ public AttendanceResponse markAttendance(MarkAttendanceRequest request) {
     Student student = studentRepository.findById(Long.parseLong(request.getStudentId()))
             .orElseThrow(() -> new RuntimeException("Student not found"));
 
-    QRSession session = qrSessionRepository.findBySessionToken(request.getQrToken())
+    QrSession session = qrSessionRepository.findBySessionToken(request.getQrToken())
             .orElseThrow(() -> new RuntimeException("Invalid QR code"));
 
     if (!session.getIsActive() || LocalDateTime.now().isAfter(session.getExpiryTime())) {
