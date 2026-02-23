@@ -99,7 +99,7 @@ public class QRCodeServiceImpl implements QrCodeService {
         QrSession session = qrSessionRepository.findById(sessionId)
         .orElseThrow(()->new ResourceNotFoundException("Qr Session","id",sessionId));
 
-        int scanCount = attendanceRepository.findByQRSessionId(sessionId).size();
+        int scanCount = attendanceRepository.findByQrSessionId(sessionId).size();
 
         session.setTotalScans(scanCount);
         qrSessionRepository.save(session);
