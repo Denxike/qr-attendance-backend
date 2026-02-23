@@ -60,7 +60,7 @@ public class QRCodeServiceImpl implements QrCodeService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiryTime = now.plusMinutes(request.getDurationMinutes());
 
-        QrSession session = new QRSession();
+        QrSession session = new QrSession();
         session.setSessionToken(token);
         session.setCourse(course);
         session.setTeacher(teacher);
@@ -70,7 +70,7 @@ public class QRCodeServiceImpl implements QrCodeService {
         session.setIsActive(true);
         session.setTotalScans(0);
 
-        QRSession savedSession = qrSessionRepository.save(session);
+        QrSession savedSession = qrSessionRepository.save(session);
 
         String qrCodeImage;
         try{
