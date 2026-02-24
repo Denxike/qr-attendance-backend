@@ -18,4 +18,5 @@ public class QrGenerationRequest {
     @Max(value = 60,message ="It should not exceed 60 minutes")
     private Integer durationMinutes;
     private String sessionName;
+   private Long teacherId;
 }

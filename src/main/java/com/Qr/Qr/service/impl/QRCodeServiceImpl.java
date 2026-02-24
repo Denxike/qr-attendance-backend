@@ -40,7 +40,7 @@ public class QRCodeServiceImpl implements QrCodeService {
     @Transactional
     public QrGenerationResponse generateQRCode(QrGenerationRequest request, Long teacherId) {
 	String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Teacher teacher = teacherRepository.findByUserEmail(email)
+        Teacher teacher = teacherRepository.findById(request.getTeacherId())
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher","id",teacherId));
         log.info("Authenticated teacherId = {}", teacherId);
 
