@@ -17,7 +17,6 @@ import com.Qr.Qr.repository.TeacherRepository;
 import com.Qr.Qr.service.QrCodeService;
 import com.Qr.Qr.util.QRCodeUtil;
 import com.google.zxing.WriterException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
