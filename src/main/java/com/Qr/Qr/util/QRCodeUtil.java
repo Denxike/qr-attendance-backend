@@ -15,7 +15,10 @@ import java.util.Base64;
 public class QRCodeUtil {
     private static final int DEFAULT_WIDTH = 300;
     private static final int DEFAULT_HEIGHT = 300;
-
+	
+    static {
+        System.setProperty("java.awt.headless", "true");
+    }
     public String generateQRCodeImage(String data, int width, int height)
         throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
