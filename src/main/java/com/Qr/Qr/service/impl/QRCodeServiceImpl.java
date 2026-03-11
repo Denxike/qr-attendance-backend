@@ -78,7 +78,8 @@ public class QRCodeServiceImpl implements QrCodeService {
 
         String qrCodeImage;
         try{
-            qrCodeImage = qrCodeUtil.generateQRCodeImage(token);
+			String qrData = "https://qr-attendance-frontend-two.vercel.app/mark-attendance?token=" + token;
+            qrCodeImage = qrCodeUtil.generateQRCodeImage(qrData);
         }catch (WriterException | IOException e){
             throw new RuntimeException("Failed to generate QR code image: "+e.getMessage());
         }
