@@ -74,7 +74,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 @Override
 @Transactional
 public AttendanceResponse markAttendance(MarkAttendanceRequest request) {
-    Student student = studentRepository.findById(Long.parseLong(request.getStudentId()))
+    Student student = studentRepository.findById(request.getStudentId())
             .orElseThrow(() -> new RuntimeException("Student not found"));
 
     QrSession session = qrSessionRepository.findBySessionToken(request.getQrToken())
