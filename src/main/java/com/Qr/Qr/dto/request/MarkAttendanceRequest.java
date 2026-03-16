@@ -13,8 +13,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MarkAttendanceRequest {
-    @NotBlank(message = "StudentId is required")
-    @Pattern(regexp = "^[A-Z]{1,3}\\d{2}/\\d{5}/\\d{2}")
     private Long studentId;
     private String qrToken;
     private String qrSessionId;
