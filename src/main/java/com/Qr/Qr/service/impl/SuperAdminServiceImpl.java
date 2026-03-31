@@ -1,0 +1,106 @@
+package com.Qr.Qr.service.impl;
+
+import com.Qr.Qr.model.*;
+import com.Qr.Qr.repository.*;
+import com.Qr.Qr.service.SuperAdminService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class SuperAdminServiceImpl implements SuperAdminService {
+    
+    private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
+    private final CourseRepository courseRepository;
+    private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
+    private final QRSessionRepository qrSessionRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public Map<String, Object> getDashboardStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalUsers", userRepository.count());
+        stats.put("totalStudents", studentRepository.count());
+        stats.put("totalTeachers", teacherRepository.count());
+        stats.put("totalDepartments", departmentRepository.count());
+        stats.put("totalCourses", courseRepository.count());
+        stats.put("totalQRSessions", qrSessionRepository.count());
+        stats.put("totalAttendance", attendanceRepository.count());
+        stats.put("activeUsers", userRepository.countByIsActive(true));
+        return stats;
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllUsers() {
+        return userRepository.findAll().stream().map(user -> {
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getId());
+            userMap.put("email", user.getEmail());
+            userMap.put("fullName", user.getFullName());
+            userMap.put("role", user.getRole());
+            userMap.put("isActive", user.getIsActive());
+            userMap.put("createdAt", user.getCreatedAt());
+            return userMap;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Object> getSystemReports() {
+        Map<String, Object> reports = new HashMap<>();
+        
+        // Attendance rate by department
+        List<Map<String, Object>> attendanceByDept = new ArrayList<>();
+        for (Department dept : departmentRepository.findAll()) {
+            Map<String, Object> deptReport = new HashMap<>();
+            deptReport.put("departmentName", dept.getDepartmentName());
+            deptReport.put("totalStudents", studentRepository.countByDepartmentId(dept.getId()));
+            deptReport.put("totalCourses", courseRepository.countByDepartmentId(dept.getId()));
+            attendanceByDept.add(deptReport);
+        }
+        reports.put("attendanceByDepartment", attendanceByDept);
+        
+        // Recent QR sessions
+        reports.put("recentSessions", qrSessionRepository.findAll().stream()
+            .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+            .limit(10)
+            .map(session -> Map.of(
+                "sessionName", session.getSessionName(),
+                "courseName", session.getCourse().getCourseName(),
+                "createdAt", session.getCreatedAt(),
+                "isActive", session.getIsActive()
+            ))
+            .collect(Collectors.toList()));
+        
+        return reports;
+    }
+
+    @Override
+    @Transactional
+    public void createAdmin(Map<String, String> request) {
+        User user = new User();
+        user.setEmail(request.get("email"));
+        user.setPassword(passwordEncoder.encode(request.get("password")));
+        user.setFullName(request.get("fullName"));
+        user.setRole("ADMIN");
+        user.setIsActive(true);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+}
+
