@@ -1,5 +1,6 @@
 package com.Qr.Qr.service.impl;
 
+import com.Qr.Qr.model.enums.Role;
 import com.Qr.Qr.model.*;
 import com.Qr.Qr.repository.*;
 import com.Qr.Qr.service.SuperAdminService;
@@ -77,8 +78,8 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         // Recent QR sessions
         reports.put("recentSessions", qrSessionRepository.findAll().stream()
             .sorted((a, b) ->  {
-                LocalDateTime timeA = a.getCreatedAt() != null ? a.getCreatedAt() : LocalDateTime.MIN;
-                LocalDateTime timeB = b.getCreatedAt() != null ? b.getCreatedAt() : LocalDateTime.MIN;
+                LocalDateTime timeA = a.getStartTime() != null ? a.getStartTime() : LocalDateTime.MIN;
+		LocalDateTime timeB = b.getStartTime() != null ? b.getStartTime() : LocalDateTime.MIN;
                 return timeB.compareTo(timeA);
             })
             .limit(10)
@@ -86,7 +87,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
                 Map<String, Object> sessionMap = new HashMap<>();
                 sessionMap.put("sessionName", session.getSessionName());
                 sessionMap.put("courseName", session.getCourse().getCourseName());
-                sessionMap.put("createdAt", session.getCreatedAt());
+                sessionMap.put("createdAt", session.getStartTime());
                 sessionMap.put("isActive", session.getIsActive());
                 return sessionMap;
             })
