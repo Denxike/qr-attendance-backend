@@ -38,20 +38,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-			.requestMatchers("/api/auth/**").permitAll()
-            
-            // Super Admin - Full access to everything
-            .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
-            
-            // Admin - Cannot manage super admins
-            .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-            
-            .requestMatchers("/api/teachers/**").hasAnyRole("TEACHER", "ADMIN", "SUPER_ADMIN")
-            .requestMatchers("/api/students/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN")
-            .requestMatchers("/api/courses/**").hasAnyRole("TEACHER", "STUDENT", "ADMIN", "SUPER_ADMIN")
-            .requestMatchers("/api/qr/**").hasAnyRole("TEACHER", "ADMIN", "SUPER_ADMIN")
-            .requestMatchers("/api/attendance/**").hasAnyRole("STUDENT", "TEACHER", "ADMIN", "SUPER_ADMIN")
-            .anyRequest().authenticated()
+		.requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().permitAll()
                 )
 
                 .sessionManagement(session ->
