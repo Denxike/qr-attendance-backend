@@ -31,25 +31,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // ✅ Disable CORS handling in Spring Security
-                // Our CorsFilter handles it instead
-                .cors(cors -> cors.disable())
+		.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/api/auth/hash-password").permitAll()
+            .requestMatchers("/api/super-admin/**").hasAuthority("SUPER_ADMIN")
+            .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "SUPER_ADMIN")
+            .requestMatchers("/api/teachers/**").hasAnyAuthority("TEACHER", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers("/api/students/**").hasAnyAuthority("STUDENT", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers("/api/courses/**").hasAnyAuthority("TEACHER", "STUDENT", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers("/api/qr/**").hasAnyAuthority("TEACHER", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers("/api/attendance/**").hasAnyAuthority("STUDENT", "TEACHER", "ADMIN", "SUPER_ADMIN")
+            
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-                .csrf(csrf -> csrf.disable())
-
-                .authorizeHttpRequests(auth -> auth
-		.requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().permitAll()
-                )
-
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
+    return http.build();
+}
 
     @Bean
     public PasswordEncoder passwordEncoder() {

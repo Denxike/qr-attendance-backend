@@ -34,4 +34,29 @@ public ResponseEntity<String> hashPassword(@RequestParam String password) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
+@PostMapping("/register")
+public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+    try {
+        // Register the user
+        authService.register(request);
+        
+        // Auto-login after registration
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(request.getEmail());
+        loginRequest.setPassword(request.getPassword());
+        
+        String token = authService.login(loginRequest);
+        
+        // Return token with user info
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("message", "Registration successful");
+        
+        return ResponseEntity.ok(response);
+        
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest()
+            .body(Map.of("message", e.getMessage()));
+    }
+}
 }
