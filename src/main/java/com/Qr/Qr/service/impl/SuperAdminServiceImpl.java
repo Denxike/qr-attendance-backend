@@ -78,16 +78,16 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         // Recent QR sessions
         reports.put("recentSessions", qrSessionRepository.findAll().stream()
             .sorted((a, b) -> {
-                LocalDateTime timeA = a.getCreatedAt() != null ? a.getCreatedAt() : LocalDateTime.MIN;
-                LocalDateTime timeB = b.getCreatedAt() != null ? b.getCreatedAt() : LocalDateTime.MIN;
-                return timeB.compareTo(timeA);
+		 LocalDateTime timeA = a.getStartTime() != null ? a.getStartTime() : LocalDateTime.MIN;
+		 LocalDateTime timeB = b.getStartTime() != null ? b.getStartTime() : LocalDateTime.MIN;
+                 return timeB.compareTo(timeA);
             })
             .limit(10)
             .map(session -> {
                 Map<String, Object> sessionMap = new HashMap<>();
                 sessionMap.put("sessionName", session.getSessionName());
                 sessionMap.put("courseName", session.getCourse().getCourseName());
-                sessionMap.put("createdAt", session.getCreatedAt());
+                sessionMap.put("createdAt", session.getStartTime());
                 sessionMap.put("isActive", session.getIsActive());
                 return sessionMap;
             })
