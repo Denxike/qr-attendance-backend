@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.Qr.Qr.dto.request.LoginRequest;
+import com.Qr.Qr.dto.request.StudentRegistrationRequest;
 import com.Qr.Qr.dto.response.LoginResponse;
 import com.Qr.Qr.service.AuthService;
 import jakarta.validation.Valid;
