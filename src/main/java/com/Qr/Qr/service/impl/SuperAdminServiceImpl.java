@@ -26,7 +26,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     private final AttendanceRepository attendanceRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
+      @Override
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalUsers", userRepository.count());
@@ -37,26 +37,26 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         stats.put("totalQRSessions", qrSessionRepository.count());
         stats.put("totalAttendance", attendanceRepository.count());
         stats.put("activeUsers", userRepository.findAll().stream()
-	.filter(User::getIsActive)
-	.count());
+            .filter(User::getIsActive)
+            .count());
         return stats;
     }
 
-    @Override
+     @Override
     public List<Map<String, Object>> getAllUsers() {
         return userRepository.findAll().stream().map(user -> {
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("id", user.getId());
             userMap.put("email", user.getEmail());
             userMap.put("fullName", user.getFullName());
-            userMap.put("role", user.getRole());
+            userMap.put("role", user.getRole().name());
             userMap.put("isActive", user.getIsActive());
             userMap.put("createdAt", user.getCreatedAt());
             return userMap;
         }).collect(Collectors.toList());
     }
 
-    @Override
+   @Override
     public Map<String, Object> getSystemReports() {
         Map<String, Object> reports = new HashMap<>();
         
@@ -66,20 +66,20 @@ public class SuperAdminServiceImpl implements SuperAdminService {
             Map<String, Object> deptReport = new HashMap<>();
             deptReport.put("departmentName", dept.getDepartmentName());
             deptReport.put("totalStudents", studentRepository.findAll().stream()
-		.filter(s -> s.getDepartment().getId().equals(dept.getId()))
-		.count());
+                .filter(s -> s.getDepartment().getId().equals(dept.getId()))
+                .count());
             deptReport.put("totalCourses", courseRepository.findAll().stream()
-		.filter(c -> c.getDepartment().getId().equals(dept.getId()))
-		.count());
+                .filter(c -> c.getDepartment().getId().equals(dept.getId()))
+                .count());
             attendanceByDept.add(deptReport);
         }
         reports.put("attendanceByDepartment", attendanceByDept);
         
         // Recent QR sessions
         reports.put("recentSessions", qrSessionRepository.findAll().stream()
-            .sorted((a, b) ->  {
-                LocalDateTime timeA = a.getStartTime() != null ? a.getStartTime() : LocalDateTime.MIN;
-		LocalDateTime timeB = b.getStartTime() != null ? b.getStartTime() : LocalDateTime.MIN;
+            .sorted((a, b) -> {
+                LocalDateTime timeA = a.getCreatedAt() != null ? a.getCreatedAt() : LocalDateTime.MIN;
+                LocalDateTime timeB = b.getCreatedAt() != null ? b.getCreatedAt() : LocalDateTime.MIN;
                 return timeB.compareTo(timeA);
             })
             .limit(10)
@@ -87,7 +87,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
                 Map<String, Object> sessionMap = new HashMap<>();
                 sessionMap.put("sessionName", session.getSessionName());
                 sessionMap.put("courseName", session.getCourse().getCourseName());
-                sessionMap.put("createdAt", session.getStartTime());
+                sessionMap.put("createdAt", session.getCreatedAt());
                 sessionMap.put("isActive", session.getIsActive());
                 return sessionMap;
             })

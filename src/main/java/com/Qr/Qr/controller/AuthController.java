@@ -1,5 +1,6 @@
 package com.Qr.Qr.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.Qr.Qr.dto.request.LoginRequest;
 import com.Qr.Qr.dto.response.LoginResponse;
 import com.Qr.Qr.service.AuthService;
@@ -16,6 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @GetMapping("/hash-password")
+public ResponseEntity<String> hashPassword(@RequestParam String password) {
+    return ResponseEntity.ok(passwordEncoder.encode(password));
+}
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
