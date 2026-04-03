@@ -35,7 +35,7 @@ public ResponseEntity<String> hashPassword(@RequestParam String password) {
         return ResponseEntity.ok(response);
     }
 @PostMapping("/register")
-public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+public ResponseEntity<?> register(@Valid @RequestBody StudentRegistrationRequest request) {
     try {
         // Register the user
         authService.register(request);
