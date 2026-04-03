@@ -1,5 +1,7 @@
 package com.Qr.Qr.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.Qr.Qr.dto.request.LoginRequest;
 import com.Qr.Qr.dto.response.LoginResponse;
