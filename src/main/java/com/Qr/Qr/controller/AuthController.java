@@ -32,10 +32,8 @@ public class AuthController {
     @PostMapping("/register/student")
     public ResponseEntity<?> registerStudent(@Valid @RequestBody StudentRegistrationRequest request) {
         try {
-            // Register the student
-            authService.register(request);
+            authService.registerStudent(request);
             
-            // Auto-login
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail(request.getEmail());
             loginRequest.setPassword(request.getPassword());
@@ -53,10 +51,8 @@ public class AuthController {
     @PostMapping("/register/teacher")
     public ResponseEntity<?> registerTeacher(@Valid @RequestBody TeacherRegistrationRequest request) {
         try {
-            // Register the teacher
-            authService.register(request);
+            authService.registerTeacher(request);
             
-            // Auto-login
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail(request.getEmail());
             loginRequest.setPassword(request.getPassword());
@@ -71,7 +67,6 @@ public class AuthController {
         }
     }
 
-    // Temporary endpoint to generate password hashes
     @GetMapping("/hash-password")
     public ResponseEntity<Map<String, String>> hashPassword(@RequestParam String password) {
         String hash = passwordEncoder.encode(password);
