@@ -1,65 +1,79 @@
 package com.Qr.Qr.controller;
 
-import java.util.Map;
-import java.util.HashMap;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import com.Qr.Qr.dto.request.LoginRequest;
 import com.Qr.Qr.dto.request.StudentRegistrationRequest;
+import com.Qr.Qr.dto.request.TeacherRegistrationRequest;
 import com.Qr.Qr.dto.response.LoginResponse;
 import com.Qr.Qr.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AuthController {
+
     private final AuthService authService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @GetMapping("/hash-password")
-public ResponseEntity<String> hashPassword(@RequestParam String password) {
-    return ResponseEntity.ok(passwordEncoder.encode(password));
-}
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
-@PostMapping("/register")
-public ResponseEntity<?> register(@Valid @RequestBody StudentRegistrationRequest request) {
-    try {
-        // Register the user
-        authService.register(request);
-        
-        // Auto-login after registration
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail(request.getEmail());
-        loginRequest.setPassword(request.getPassword());
-        
-        String token = authService.login(loginRequest);
-        
-        // Return token with user info
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("message", "Registration successful");
-        
-        return ResponseEntity.ok(response);
-        
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest()
-            .body(Map.of("message", e.getMessage()));
+
+    @PostMapping("/register/student")
+    public ResponseEntity<?> registerStudent(@Valid @RequestBody StudentRegistrationRequest request) {
+        try {
+            authService.registerStudent(request);
+            
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setEmail(request.getEmail());
+            loginRequest.setPassword(request.getPassword());
+            
+            LoginResponse loginResponse = authService.login(loginRequest);
+            
+            return ResponseEntity.ok(loginResponse);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("message", e.getMessage()));
+        }
     }
-}
+
+    @PostMapping("/register/teacher")
+    public ResponseEntity<?> registerTeacher(@Valid @RequestBody TeacherRegistrationRequest request) {
+        try {
+            authService.registerTeacher(request);
+            
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setEmail(request.getEmail());
+            loginRequest.setPassword(request.getPassword());
+            
+            LoginResponse loginResponse = authService.login(loginRequest);
+            
+            return ResponseEntity.ok(loginResponse);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // Temporary endpoint to generate password hashes
+    @GetMapping("/hash-password")
+    public ResponseEntity<Map<String, String>> hashPassword(@RequestParam String password) {
+        String hash = passwordEncoder.encode(password);
+        Map<String, String> response = new HashMap<>();
+        response.put("password", password);
+        response.put("hash", hash);
+        return ResponseEntity.ok(response);
+    }
 }
