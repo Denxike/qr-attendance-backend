@@ -1,5 +1,6 @@
 package com.Qr.Qr.service.impl;
 
+import com.Qr.Qr.model.enums.Role;
 import com.Qr.Qr.dto.request.LoginRequest;
 import com.Qr.Qr.dto.request.StudentRegistrationRequest;
 import com.Qr.Qr.dto.request.TeacherRegistrationRequest;
@@ -39,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        String token = jwtUtils.generateToken(user);
+        String token = jwtUtils.generateToken(user.getEmail(), user.getRole().name());
 
         return LoginResponse.builder()
             .token(token)
