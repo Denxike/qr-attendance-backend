@@ -32,8 +32,10 @@ public class AuthController {
     @PostMapping("/register/student")
     public ResponseEntity<?> registerStudent(@Valid @RequestBody StudentRegistrationRequest request) {
         try {
-            authService.registerStudent(request);
+            // Register the student
+            authService.register(request);
             
+            // Auto-login
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail(request.getEmail());
             loginRequest.setPassword(request.getPassword());
@@ -51,8 +53,10 @@ public class AuthController {
     @PostMapping("/register/teacher")
     public ResponseEntity<?> registerTeacher(@Valid @RequestBody TeacherRegistrationRequest request) {
         try {
-            authService.registerTeacher(request);
+            // Register the teacher
+            authService.register(request);
             
+            // Auto-login
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail(request.getEmail());
             loginRequest.setPassword(request.getPassword());
