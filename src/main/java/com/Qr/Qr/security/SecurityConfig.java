@@ -41,9 +41,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         
         .sessionManagement(session ->  // ❌ MISSING
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);  // ❌ MISSING
+        );
 
     return http.build();           
 }
