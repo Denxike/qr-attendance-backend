@@ -31,35 +31,11 @@ public class SecurityConfig {
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(auth -> auth
-            // Public endpoints - NO AUTHENTICATION REQUIRED
-            .requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/health").permitAll()  // ADD THIS LINE
-            .requestMatchers("/actuator/**").permitAll()  // ADD THIS LINE (if using actuator)
-            
-            // Super Admin endpoints
-            .requestMatchers("/api/super-admin/**").hasAuthority("SUPER_ADMIN")
-            
-            // Admin endpoints - accessible by both SUPER_ADMIN and ADMIN
-            .requestMatchers("/api/admin/**").hasAnyAuthority("SUPER_ADMIN", "ADMIN")
-            
-            // Teacher endpoints
-            .requestMatchers("/api/teacher/**").hasAnyAuthority("SUPER_ADMIN", "ADMIN", "TEACHER")
-            
-            // Student endpoints
-            .requestMatchers("/api/student/**").hasAnyAuthority("SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT")
-            
-            // All other requests require authentication
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        .authenticationProvider(authenticationProvider())
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
+      .authorizeHttpRequests(auth -> auth
+    .requestMatchers("/api/auth/**").permitAll()  // Keep this for login/register
+    .anyRequest().permitAll()  // Allow everything temporarily for testing
+)
+           
 }
     @Bean
     public AuthenticationProvider authenticationProvider() {
