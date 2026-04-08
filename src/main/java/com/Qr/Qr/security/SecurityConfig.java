@@ -31,11 +31,21 @@ public class SecurityConfig {
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-      .authorizeHttpRequests(auth -> auth
-    .requestMatchers("/api/auth/**").permitAll()  // Keep this for login/register
-    .anyRequest().permitAll()  // Allow everything temporarily for testing
-);
-           
+       .cors(cors -> cors.disable())  // ❌ MISSING
+        .csrf(csrf -> csrf.disable())  // ❌ MISSING
+        
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**").permitAll()
+            .anyRequest().permitAll()
+        )
+        
+        .sessionManagement(session ->  // ❌ MISSING
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+        
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);  // ❌ MISSING
+
+    return http.build();           
 }
     @Bean
     public AuthenticationProvider authenticationProvider() {
