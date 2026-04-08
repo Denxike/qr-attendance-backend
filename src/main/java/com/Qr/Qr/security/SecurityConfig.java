@@ -34,7 +34,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
       .authorizeHttpRequests(auth -> auth
     .requestMatchers("/api/auth/**").permitAll()  // Keep this for login/register
     .anyRequest().permitAll()  // Allow everything temporarily for testing
-)
+);
            
 }
     @Bean
