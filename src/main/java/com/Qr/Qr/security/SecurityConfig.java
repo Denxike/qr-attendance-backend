@@ -28,43 +28,39 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                
-                // Super Admin routes
-                .requestMatchers("/api/super-admin/**").hasAuthority("SUPER_ADMIN")
-                
-                // Admin routes (accessible by both ADMIN and SUPER_ADMIN)
-                .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "SUPER_ADMIN")
-                
-                // Teacher routes
-                .requestMatchers("/api/teachers/**").hasAnyAuthority("TEACHER", "ADMIN", "SUPER_ADMIN")
-                
-                // Student routes
-                .requestMatchers("/api/students/**").hasAnyAuthority("STUDENT", "ADMIN", "SUPER_ADMIN")
-                
-                // Course routes
-                .requestMatchers("/api/courses/**").hasAnyAuthority("TEACHER", "STUDENT", "ADMIN", "SUPER_ADMIN")
-                
-                // QR routes
-                .requestMatchers("/api/qr/**").hasAnyAuthority("TEACHER", "ADMIN", "SUPER_ADMIN")
-                
-                // Attendance routes
-                .requestMatchers("/api/attendance/**").hasAnyAuthority("STUDENT", "TEACHER", "ADMIN", "SUPER_ADMIN")
-                
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth -> auth
+            // Public endpoints - NO AUTHENTICATION REQUIRED
+            .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/health").permitAll()  // ADD THIS LINE
+            .requestMatchers("/actuator/**").permitAll()  // ADD THIS LINE (if using actuator)
+            
+            // Super Admin endpoints
+            .requestMatchers("/api/super-admin/**").hasAuthority("SUPER_ADMIN")
+            
+            // Admin endpoints - accessible by both SUPER_ADMIN and ADMIN
+            .requestMatchers("/api/admin/**").hasAnyAuthority("SUPER_ADMIN", "ADMIN")
+            
+            // Teacher endpoints
+            .requestMatchers("/api/teacher/**").hasAnyAuthority("SUPER_ADMIN", "ADMIN", "TEACHER")
+            
+            // Student endpoints
+            .requestMatchers("/api/student/**").hasAnyAuthority("SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT")
+            
+            // All other requests require authentication
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
-
+    return http.build();
+}
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
