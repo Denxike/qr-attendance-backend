@@ -49,7 +49,7 @@ public LoginResponse login(LoginRequest request) {
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        String token = jwtUtils.generateToken(user.getEmail(),user.getRole().name());
+String token = jwtUtils.generateToken(user, null, null);
 
         return LoginResponse.builder()
             .token(token)
