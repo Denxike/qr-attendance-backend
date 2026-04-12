@@ -36,6 +36,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll()
+	     .requestMatchers("/api/departments").permitAll()
             .anyRequest().permitAll()
         )
         

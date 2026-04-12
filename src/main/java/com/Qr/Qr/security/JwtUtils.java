@@ -1,5 +1,6 @@
 package com.Qr.Qr.security;
 
+import com.Qr.Qr.model.User; 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
