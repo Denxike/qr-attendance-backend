@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/qr")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class QrCodeController {
     private final QrCodeService qrCodeService;
 

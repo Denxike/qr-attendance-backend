@@ -1,7 +1,6 @@
 package com.Qr.Qr.service.impl;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import com.Qr.Qr.dto.request.QrGenerationRequest;
 import com.Qr.Qr.dto.response.QrGenerationResponse;
@@ -20,7 +19,6 @@ import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,32 +37,42 @@ public class QRCodeServiceImpl implements QrCodeService {
 
     @Override
     @Transactional
-    public QrGenerationResponse generateQRCode(QrGenerationRequest request, Long teacherId) {
-	String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Teacher teacher = teacherRepository.findById(request.getTeacherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher","id",teacherId));
-        log.info("Authenticated teacherId = {}", teacherId);
+    public QrGenerationResponse generateQRCode(QrGenerationRequest request, Long dummyTeacherId) {
+        
+        // 1. SECURE AUTH: Get email from the JWT token
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Authenticated email = {}", email);
 
+        // 2. Find Teacher by their email (Ignore the request ID)
+        Teacher teacher = teacherRepository.findByUserEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("No teacher profile found for this email"));
 
+        // 3. Find the Course
         Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course","Id",request.getCourseId()));
-        log.info("Course.teacherId = {}", course.getTeacher().getId());
-        if(!course.getTeacher().getId().equals(teacher.getId())){
-           throw new UnauthorizedException("You are not authorized to generateQR for this course");
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "Id", request.getCourseId()));
+        
+        // 4. Verify Ownership
+        if (!course.getTeacher().getId().equals(teacher.getId())) {
+            throw new UnauthorizedException("You are not authorized to generate QR for this course");
         }
+
+        // 5. Deactivate previous sessions
         qrSessionRepository.findByCourseIdAndIsActiveTrue(course.getId())
                 .ifPresent(existingSession -> {
-                        existingSession.setIsActive(false);
-                        qrSessionRepository.save(existingSession);
+                    existingSession.setIsActive(false);
+                    qrSessionRepository.save(existingSession);
                 });
+
+        // 6. Generate Token
         String token = UUID.randomUUID().toString();
-        while(qrSessionRepository.existsBySessionToken(token)) {
+        while (qrSessionRepository.existsBySessionToken(token)) {
             token = UUID.randomUUID().toString();
         }
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiryTime = now.plusMinutes(request.getDurationMinutes());
 
+        // 7. Save new Session
         QrSession session = new QrSession();
         session.setSessionToken(token);
         session.setCourse(course);
@@ -77,12 +85,13 @@ public class QRCodeServiceImpl implements QrCodeService {
 
         QrSession savedSession = qrSessionRepository.save(session);
 
+        // 8. Generate QR Image using Vercel URL
         String qrCodeImage;
-        try{
-			String qrData = "https://qr-attendance-frontend-two.vercel.app" + "/mark-attendance?token=" + token;
+        try {
+            String qrData = "https://qr-attendance-frontend-two.vercel.app/mark-attendance?token=" + token;
             qrCodeImage = qrCodeUtil.generateQRCodeImage(qrData);
-        }catch (WriterException | IOException e){
-            throw new RuntimeException("Failed to generate QR code image: "+e.getMessage());
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException("Failed to generate QR code image: " + e.getMessage());
         }
 
         return QrGenerationResponse.builder()
@@ -100,10 +109,11 @@ public class QRCodeServiceImpl implements QrCodeService {
                 .totalScans(0)
                 .build();
     }
+
     @Override
     public QrGenerationResponse getSessionDetails(Long sessionId) {
         QrSession session = qrSessionRepository.findById(sessionId)
-        .orElseThrow(()->new ResourceNotFoundException("Qr Session","id",sessionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Qr Session", "id", sessionId));
 
         int scanCount = attendanceRepository.findByQrSessionId(sessionId).size();
 
@@ -123,15 +133,25 @@ public class QRCodeServiceImpl implements QrCodeService {
                 .totalScans(scanCount)
                 .build();
     }
+
     @Override
-    public void deactivateSession(Long sessionId, Long teacherId) {
+    public void deactivateSession(Long sessionId, Long dummyTeacherId) {
+        // 1. SECURE AUTH: Get email from the JWT token
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        // 2. Find Teacher by their email
+        Teacher teacher = teacherRepository.findByUserEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("No teacher profile found"));
+
         QrSession session = qrSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Qr Session","id",sessionId));
-        if (!session.getTeacher().getId().equals(teacherId)){
+                .orElseThrow(() -> new ResourceNotFoundException("Qr Session", "id", sessionId));
+        
+        // 3. Verify Ownership securely
+        if (!session.getTeacher().getId().equals(teacher.getId())) {
             throw new UnauthorizedException("You are not authorized to deactivate this session");
         }
+        
         session.setIsActive(false);
         qrSessionRepository.save(session);
-
     }
 }
