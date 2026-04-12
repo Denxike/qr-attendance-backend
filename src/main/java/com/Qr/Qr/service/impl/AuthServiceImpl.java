@@ -31,16 +31,24 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    @Override
-    public LoginResponse login(LoginRequest request) {
+       @Override
+public LoginResponse login(LoginRequest request) {
+    try {
+        // First check if user exists
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + request.getEmail()));
+        
+        // Check if user is active
+        if (!user.getIsActive()) {
+            throw new IllegalArgumentException("User account is inactive");
+        }
+        
+        // Authenticate
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        String token = jwtUtils.generateToken(user.getEmail(), user.getRole().name());
+        String token = jwtUtils.generateToken(user);
 
         return LoginResponse.builder()
             .token(token)
@@ -49,8 +57,11 @@ public class AuthServiceImpl implements AuthService {
             .role(user.getRole().name())
             .userId(user.getId())
             .build();
+            
+    } catch (BadCredentialsException e) {
+        throw new IllegalArgumentException("Invalid email or password");
     }
-
+}
     @Override
     @Transactional
     public void registerStudent(StudentRegistrationRequest request) {

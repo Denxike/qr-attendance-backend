@@ -24,12 +24,20 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    try {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
+    } catch (BadCredentialsException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(Map.of("message", "Invalid email or password"));
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(Map.of("message", "Login failed: " + e.getMessage()));
     }
-
-    @PostMapping("/register/student")
+}
+ 
+   @PostMapping("/register/student")
     public ResponseEntity<?> registerStudent(@Valid @RequestBody StudentRegistrationRequest request) {
         try {
             authService.registerStudent(request);
@@ -75,4 +83,25 @@ public class AuthController {
         response.put("hash", hash);
         return ResponseEntity.ok(response);
     }
+      @PostMapping("/forgot-password")
+public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> request) {
+    String email = request.get("email");
+    
+    try {
+        // Check if user exists
+        userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("No user found with this email"));
+        
+        // TODO: Implement actual email sending logic
+        // For now, just return success
+        
+        return ResponseEntity.ok(Map.of(
+            "message", "Password reset link sent to your email"
+        ));
+        
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest()
+            .body(Map.of("message", e.getMessage()));
+    }
+}
 }
