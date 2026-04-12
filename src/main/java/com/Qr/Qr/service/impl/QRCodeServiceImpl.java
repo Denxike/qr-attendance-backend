@@ -20,6 +20,7 @@ import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -78,7 +79,7 @@ public class QRCodeServiceImpl implements QrCodeService {
 
         String qrCodeImage;
         try{
-			String qrData = "https://qr-attendance-frontend-two.vercel.app/mark-attendance?token=" + token;
+			String qrData = "https://qr-attendance-frontend-two.vercel.app" + "/mark-attendance?token=" + token;
             qrCodeImage = qrCodeUtil.generateQRCodeImage(qrData);
         }catch (WriterException | IOException e){
             throw new RuntimeException("Failed to generate QR code image: "+e.getMessage());
