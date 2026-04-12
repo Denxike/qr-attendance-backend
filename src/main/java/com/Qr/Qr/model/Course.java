@@ -48,7 +48,6 @@ import java.util.List;
 
         @ManyToOne
         @JoinColumn(name = "department_id", nullable = false)
-	@JsonIgnore
         private Department department;
 
         @Column(name = "is_active")

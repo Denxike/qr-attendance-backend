@@ -24,7 +24,6 @@ public class Teacher {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private User user;
 
     @Column(name = "employee_id", nullable = false, unique = true)
@@ -32,7 +31,6 @@ public class Teacher {
 
     @ManyToOne
     @JoinColumn(name="department_id", nullable = false)
-	@JsonIgnore
     private Department department;
 
     @Column(name="phone_number")
@@ -43,5 +41,6 @@ public class Teacher {
     private List<Course> courses = new ArrayList<>();
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+	@JsonIgnore
     private List<QrSession> qrSessions = new ArrayList<>();
 }
