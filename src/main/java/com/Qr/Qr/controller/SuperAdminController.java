@@ -1,5 +1,6 @@
 package com.Qr.Qr.controller;
 
+import com.Qr.Qr.model.enums.Role;
 import com.Qr.Qr.model.Department;
 import com.Qr.Qr.model.User;
 import com.Qr.Qr.repository.DepartmentRepository;
@@ -45,7 +46,7 @@ public class SuperAdminController {
         newAdmin.setFullName(request.get("fullName"));
         newAdmin.setEmail(email);
         newAdmin.setPassword(passwordEncoder.encode(request.get("password"))); // Hash the password!
-        newAdmin.setRole("ADMIN"); // Force the role to ADMIN
+        newAdmin.setRole(Role.ADMIN);
         newAdmin.setIsActive(true);
 
         userRepository.save(newAdmin);
