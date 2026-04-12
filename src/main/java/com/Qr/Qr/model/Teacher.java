@@ -32,6 +32,7 @@ public class Teacher {
 
     @ManyToOne
     @JoinColumn(name="department_id", nullable = false)
+	@JsonIgnore
     private Department department;
 
     @Column(name="phone_number")
