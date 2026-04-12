@@ -1,45 +1,55 @@
 package com.Qr.Qr.controller;
 
-import com.Qr.Qr.dto.response.*;
-import com.Qr.Qr.service.SuperAdminService;
+import com.Qr.Qr.model.Department;
+import com.Qr.Qr.model.User;
+import com.Qr.Qr.repository.DepartmentRepository;
+import com.Qr.Qr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/super-admin")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class SuperAdminController {
-    
-    private final SuperAdminService superAdminService;
 
-    @GetMapping("/dashboard-stats")
-    public ResponseEntity<Map<String, Object>> getDashboardStats() {
-        return ResponseEntity.ok(superAdminService.getDashboardStats());
+    private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    // 1. Create a new Department
+    @PostMapping("/departments")
+    public ResponseEntity<?> createDepartment(@RequestBody Department department) {
+        if (department.getDepartmentName() == null || department.getDepartmentName().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Department name is required"));
+        }
+        
+        Department savedDepartment = departmentRepository.save(department);
+        return ResponseEntity.ok(savedDepartment);
     }
 
-    @GetMapping("/all-users")
-    public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
-        return ResponseEntity.ok(superAdminService.getAllUsers());
-    }
+    // 2. Create a new Admin (Chairman of Department)
+    @PostMapping("/admins")
+    public ResponseEntity<?> createAdmin(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        
+        if (userRepository.findByEmail(email).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email already in use"));
+        }
 
-    @GetMapping("/system-reports")
-    public ResponseEntity<Map<String, Object>> getSystemReports() {
-        return ResponseEntity.ok(superAdminService.getSystemReports());
-    }
+        User newAdmin = new User();
+        newAdmin.setFullName(request.get("fullName"));
+        newAdmin.setEmail(email);
+        newAdmin.setPassword(passwordEncoder.encode(request.get("password"))); // Hash the password!
+        newAdmin.setRole("ADMIN"); // Force the role to ADMIN
+        newAdmin.setIsActive(true);
 
-    @PostMapping("/create-admin")
-    public ResponseEntity<String> createAdmin(@RequestBody Map<String, String> request) {
-        superAdminService.createAdmin(request);
-        return ResponseEntity.ok("Admin created successfully");
-    }
+        userRepository.save(newAdmin);
 
-    @DeleteMapping("/users/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
-        superAdminService.deleteUser(userId);
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok(Map.of("message", "Admin created successfully"));
     }
 }
