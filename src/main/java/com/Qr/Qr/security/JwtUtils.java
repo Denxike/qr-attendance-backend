@@ -28,12 +28,18 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // ✅ Generate token WITH role
-    public String generateToken(String email, String role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);  // ✅ Add role to token
-        return createToken(claims, email);
-    }
+   
+    public String generateToken(User user, Long studentId, Long teacherId) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("role", user.getRole()); 
+    claims.put("userId", user.getId());
+    claims.put("fullName", user.getFullName());
+    
+    if (studentId != null) claims.put("studentId", studentId);
+    if (teacherId != null) claims.put("teacherId", teacherId);
+    
+    return createToken(claims, user.getEmail());
+}
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
