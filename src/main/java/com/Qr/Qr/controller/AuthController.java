@@ -112,21 +112,4 @@ public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<Strin
             .body(Map.of("message", e.getMessage()));
     }
 }
-        @GetMapping("/setup-super-admin")
-public ResponseEntity<String> createSuperAdmin() {
-    if (userRepository.findByEmail("super@admin.com").isPresent()) {
-        return ResponseEntity.ok("Super Admin already exists!");
-    }
-
-    User superAdmin = new User();
-    superAdmin.setEmail("super@admin.com");
-    superAdmin.setPassword(passwordEncoder.encode("password123")); // Spring Boot hashes it perfectly here
-    superAdmin.setFullName("System Super Admin");
-    superAdmin.setRole(Role.SUPER_ADMIN);
-    superAdmin.setIsActive(true);
-
-    userRepository.save(superAdmin);
-    
-    return ResponseEntity.ok("Super Admin created securely!");
-}
-}
+   }
