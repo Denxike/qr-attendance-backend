@@ -40,10 +40,10 @@ public class QRSession {
     private LocalDateTime createdAt;
    @ManyToOne
 @JoinColumn(name = "teacher_id")
-private Teacher teacher; 
-
+private Teacher teacher;
+   @Column(name = "start_time")
 private LocalDateTime startTime;
-
+    @Column(name = "total_scans")
 private int totalScans; 
 
     @OneToMany(mappedBy = "qrSession", cascade = CascadeType.ALL)
@@ -54,4 +54,8 @@ private int totalScans;
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    @jakarta.persistence.Transient // 👈 Tells the DB to ignore this column
+    private String qrCodeImage;
+
 }

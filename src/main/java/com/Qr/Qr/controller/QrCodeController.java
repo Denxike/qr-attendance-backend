@@ -14,22 +14,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/qr")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class QrCodeController {
     private final QrCodeService qrCodeService;
 
-    @PostMapping("/generate")
-    @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<QrGenerationResponse> generateQrCode (
-            @Valid @RequestBody QrGenerationRequest request,
-            Authentication authentication) {
-        Long teacherId = getTeacherIdFromAuth(authentication);
-        QrGenerationResponse response = qrCodeService.generateQRCode(request, teacherId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+//    @PostMapping("/generate")
+//    @PreAuthorize("hasAuthority('TEACHER')")
+//    public ResponseEntity<QrGenerationResponse> generateQrCode (
+//            @Valid @RequestBody QrGenerationRequest request,
+//            Authentication authentication) {
+//        Long teacherId = getTeacherIdFromAuth(authentication);
+//        QrGenerationResponse response = qrCodeService.generateQRCode(request, teacherId);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+//    }
 
     @PutMapping("/session/{id}/deactivate")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAuthority('TEACHER')")
     public ResponseEntity<Void> deactivateSession(
             @PathVariable Long id,
             Authentication authentication) {

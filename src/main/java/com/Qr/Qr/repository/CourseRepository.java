@@ -17,10 +17,12 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
             "WHERE e.student.id = :studentId " +
             "AND e.status = 'ENROLLED'")
     List<Course> findCoursesByStudentId(@Param("studentId") Long studentId);
- List<Course> findByDepartmentId(Long departmentId);	
+ List<Course> findByDepartmentId(Long departmentId);
+ List<Course> findByTeacherId(Long teacherId);
     Boolean existsByCourseCode(String courseCode);
     Long countByDepartmentId(Long departmentId);
     Long countByTeacherId(Long teacherId);
+    List<Course> findByTeacherUserEmail(String email);
 
     // All active courses not yet enrolled by student
     @Query("SELECT c FROM Course c WHERE c.isActive = true AND c.id NOT IN " +

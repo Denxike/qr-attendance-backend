@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/departments")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Allows React to fetch data
+ // Allows React to fetch data
 public class DepartmentController {
 
     private final DepartmentRepository departmentRepository;

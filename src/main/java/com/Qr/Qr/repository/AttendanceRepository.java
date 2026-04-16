@@ -10,6 +10,10 @@ import java.util.List;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     // Valid methods based on Attendance entity structure
     List<Attendance> findByStudentId(Long studentId);
+    long countByQrSessionTeacherId(Long teacherId);
     List<Attendance> findByQrSessionId(Long sessionId);
-    boolean existsByStudent_IdAndQrSession_Id(Long studentId, Long qrSessionId);
+    boolean existsByStudentIdAndQrSessionId(Long studentId, Long qrSessionId);
+    long countByQrSessionId(Long qrSessionId);
+    List<Attendance> findByStudentIdAndQrSessionCourseId(Long studentId, Long courseId);
+    List<Attendance> findByQrSessionCourseIdOrderByMarkedAtDesc(Long courseId);
 }

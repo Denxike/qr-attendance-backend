@@ -15,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/super-admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class SuperAdminController {
 
     private final DepartmentRepository departmentRepository;

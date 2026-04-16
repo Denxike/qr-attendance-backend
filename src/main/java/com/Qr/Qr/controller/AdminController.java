@@ -10,6 +10,7 @@ import com.Qr.Qr.repository.TeacherRepository;
 import com.Qr.Qr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class AdminController {
 
     private final CourseRepository courseRepository;
@@ -30,6 +30,7 @@ public class AdminController {
 
     // --- COURSES ---
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/courses")
     public ResponseEntity<List<Course>> getAllCourses() {
         return ResponseEntity.ok(courseRepository.findAll());

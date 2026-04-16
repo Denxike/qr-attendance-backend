@@ -3,16 +3,11 @@ package com.Qr.Qr.service.impl;
 import java.util.stream.Collectors;
 import com.Qr.Qr.dto.request.MarkAttendanceRequest;
 import com.Qr.Qr.dto.response.AttendanceResponse;
-import com.Qr.Qr.exception.DuplicateAttendanceException;
-import com.Qr.Qr.exception.InvalidQRCodeException;
 import com.Qr.Qr.exception.ResourceNotFoundException;
-import com.Qr.Qr.exception.UnauthorizedException;
 import com.Qr.Qr.mapper.AttendanceMapper;
 import com.Qr.Qr.model.Attendance;
-import com.Qr.Qr.model.QrSession;
+import com.Qr.Qr.model.QRSession;
 import com.Qr.Qr.model.Student;
-import com.Qr.Qr.model.enums.AttendanceStatus;
-import com.Qr.Qr.model.enums.EnrollmentStatus;
 import com.Qr.Qr.repository.AttendanceRepository;
 import com.Qr.Qr.repository.QRSessionRepository;
 import com.Qr.Qr.repository.StudentCourseEnrollmentRepository;
@@ -77,14 +72,14 @@ public AttendanceResponse markAttendance(MarkAttendanceRequest request) {
     Student student = studentRepository.findById(request.getStudentId())
             .orElseThrow(() -> new RuntimeException("Student not found"));
 
-    QrSession session = qrSessionRepository.findBySessionToken(request.getQrToken())
+    QRSession session = qrSessionRepository.findBySessionToken(request.getQrToken())
             .orElseThrow(() -> new RuntimeException("Invalid QR code"));
 
     if (!session.getIsActive() || LocalDateTime.now().isAfter(session.getExpiryTime())) {
         throw new RuntimeException("QR code has expired");
     }
 
-    if (attendanceRepository.existsByStudent_IdAndQrSession_Id(student.getId(), session.getId())) {
+    if (attendanceRepository.existsByStudentIdAndQrSessionId(student.getId(), session.getId())) {
         throw new RuntimeException("Attendance already marked for this session");
     }
 

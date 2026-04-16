@@ -64,6 +64,6 @@ import java.util.List;
 
         @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-        private List<QrSession> qrSessions = new ArrayList<>();
+        private List<QRSession> qrSessions = new ArrayList<>();
 
  }

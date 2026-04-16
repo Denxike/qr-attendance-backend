@@ -10,6 +10,6 @@ public interface CourseService {
     List<CourseResponse> getCoursesByTeacher(Long teacherId);
     List<CourseResponse> getAvailableCourses(Long studentId);
     List<CourseResponse> getCoursesByStudent(Long studentId);
-
+    List<CourseResponse> getCoursesByTeacherEmail(String email);
     CourseResponse getCourseById(Long courseId);
 }

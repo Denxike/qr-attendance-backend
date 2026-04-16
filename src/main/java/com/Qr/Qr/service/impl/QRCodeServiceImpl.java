@@ -1,13 +1,12 @@
 package com.Qr.Qr.service.impl;
 
+import com.Qr.Qr.model.QRSession;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
-import com.Qr.Qr.dto.request.QrGenerationRequest;
 import com.Qr.Qr.dto.response.QrGenerationResponse;
 import com.Qr.Qr.exception.ResourceNotFoundException;
 import com.Qr.Qr.exception.UnauthorizedException;
 import com.Qr.Qr.model.Course;
-import com.Qr.Qr.model.QrSession;
 import com.Qr.Qr.model.Teacher;
 import com.Qr.Qr.repository.AttendanceRepository;
 import com.Qr.Qr.repository.CourseRepository;
@@ -15,14 +14,9 @@ import com.Qr.Qr.repository.QRSessionRepository;
 import com.Qr.Qr.repository.TeacherRepository;
 import com.Qr.Qr.service.QrCodeService;
 import com.Qr.Qr.util.QRCodeUtil;
-import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -37,82 +31,64 @@ public class QRCodeServiceImpl implements QrCodeService {
 
     @Override
     @Transactional
-    public QrGenerationResponse generateQRCode(QrGenerationRequest request, Long dummyTeacherId) {
-        
-        // 1. SECURE AUTH: Get email from the JWT token
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("Authenticated email = {}", email);
+    public QRSession generateQRCode(Long courseId, Long teacherId, String sessionName, Integer duration) {
 
-        // 2. Find Teacher by their email (Ignore the request ID)
-        Teacher teacher = teacherRepository.findByUserEmail(email)
-                .orElseThrow(() -> new UnauthorizedException("No teacher profile found for this email"));
+        // 1. Find Course and Teacher
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
 
-        // 3. Find the Course
-        Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course", "Id", request.getCourseId()));
-        
-        // 4. Verify Ownership
-        if (!course.getTeacher().getId().equals(teacher.getId())) {
-            throw new UnauthorizedException("You are not authorized to generate QR for this course");
-        }
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
-        // 5. Deactivate previous sessions
-        qrSessionRepository.findByCourseIdAndIsActiveTrue(course.getId())
+        // 2. Deactivate old sessions for this course
+        qrSessionRepository.findByCourseIdAndIsActiveTrue(courseId)
                 .ifPresent(existingSession -> {
                     existingSession.setIsActive(false);
                     qrSessionRepository.save(existingSession);
                 });
 
-        // 6. Generate Token
-        String token = UUID.randomUUID().toString();
+        // 3. Generate unique Token
+        String token = java.util.UUID.randomUUID().toString();
+        // Note: Change 'existsBySessionToken' to 'existsByToken' if your repository uses that name
         while (qrSessionRepository.existsBySessionToken(token)) {
-            token = UUID.randomUUID().toString();
+            token = java.util.UUID.randomUUID().toString();
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expiryTime = now.plusMinutes(request.getDurationMinutes());
+        // 4. Calculate Time
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        java.time.LocalDateTime expiryTime = now.plusMinutes(duration);
 
-        // 7. Save new Session
-        QrSession session = new QrSession();
+        // 5. Save new Session
+        QRSession session = new QRSession();
         session.setSessionToken(token);
         session.setCourse(course);
         session.setTeacher(teacher);
-        session.setSessionName(request.getSessionName());
+        session.setSessionName(sessionName);
         session.setStartTime(now);
         session.setExpiryTime(expiryTime);
         session.setIsActive(true);
         session.setTotalScans(0);
 
-        QrSession savedSession = qrSessionRepository.save(session);
+        // Save it to DB
+        QRSession savedSession = qrSessionRepository.save(session);
 
-        // 8. Generate QR Image using Vercel URL
-        String qrCodeImage;
+        // 6. Generate the Image and attach it to the Transient field
         try {
-            String qrData = "https://qr-attendance-frontend-two.vercel.app/mark-attendance?token=" + token;
-            qrCodeImage = qrCodeUtil.generateQRCodeImage(qrData);
-        } catch (WriterException | IOException e) {
+            // Using your local frontend URL for testing
+            String qrData = "http://10.192.38.27:3000/mark-attendance?token=" + token;
+            String qrCodeImage = qrCodeUtil.generateQRCodeImage(qrData);
+
+            // Because of @Transient, this goes to React but NOT the database
+            savedSession.setQrCodeImage(qrCodeImage);
+        } catch (Exception e) {
             throw new RuntimeException("Failed to generate QR code image: " + e.getMessage());
         }
 
-        return QrGenerationResponse.builder()
-                .sessionId(savedSession.getId())
-                .sessionToken(token)
-                .qrCodeImage(qrCodeImage)
-                .courseId(course.getId())
-                .courseCode(course.getCourseCode())
-                .courseName(course.getCourseName())
-                .sessionName(request.getSessionName())
-                .startTime(now)
-                .expiryTime(expiryTime)
-                .durationMinutes(request.getDurationMinutes())
-                .isActive(true)
-                .totalScans(0)
-                .build();
+        return savedSession; // Sends the object + the transient image to the controller
     }
-
     @Override
     public QrGenerationResponse getSessionDetails(Long sessionId) {
-        QrSession session = qrSessionRepository.findById(sessionId)
+        QRSession session = qrSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Qr Session", "id", sessionId));
 
         int scanCount = attendanceRepository.findByQrSessionId(sessionId).size();
@@ -143,7 +119,7 @@ public class QRCodeServiceImpl implements QrCodeService {
         Teacher teacher = teacherRepository.findByUserEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("No teacher profile found"));
 
-        QrSession session = qrSessionRepository.findById(sessionId)
+        QRSession session = qrSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Qr Session", "id", sessionId));
         
         // 3. Verify Ownership securely
@@ -153,5 +129,24 @@ public class QRCodeServiceImpl implements QrCodeService {
         
         session.setIsActive(false);
         qrSessionRepository.save(session);
+    }
+    @Override
+    public boolean validateQRToken(String token) {
+        // Look up the session by its token string
+        // Note: Change 'findBySessionToken' to 'findByToken' if that's what your repository uses!
+        java.util.Optional<QRSession> sessionOpt = qrSessionRepository.findBySessionToken(token);
+
+        if (sessionOpt.isPresent()) {
+            QRSession session = sessionOpt.get();
+            // It is only valid if it is marked active AND the current time is before the expiry time
+            return session.getIsActive() && session.getExpiryTime().isAfter(java.time.LocalDateTime.now());
+        }
+        return false;
+    }
+
+    @Override
+    public QRSession getSessionByToken(String token) {
+        return qrSessionRepository.findBySessionToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired QR Token"));
     }
 }

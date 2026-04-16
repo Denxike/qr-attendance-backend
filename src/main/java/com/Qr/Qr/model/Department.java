@@ -1,5 +1,6 @@
 package com.Qr.Qr.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,4 +27,11 @@ public class Department {
     private String departmentName;
 @Column(name="description")
     private String description;
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+    @JsonIgnore // 👈 Make sure this is here!
+    private List<Course> courses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+    @JsonIgnore // 👈 Make sure this is here!
+    private List<Teacher> teachers = new ArrayList<>();
 }

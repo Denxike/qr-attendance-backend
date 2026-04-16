@@ -26,16 +26,18 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name = "qr_session_id")
-    private QrSession qrSession;
+    private QRSession qrSession;
 
     @Column(name = "marked_at")
-    private LocalDateTime markedAt;
+    private LocalDateTime markedAt = LocalDateTime.now();
 
     @Column(name = "status", nullable = false)
     private String status;
 
     @PrePersist
     protected void onCreate() {
-        markedAt = LocalDateTime.now();
+        if (markedAt == null) {
+            markedAt = LocalDateTime.now();
+        }
     }
 }

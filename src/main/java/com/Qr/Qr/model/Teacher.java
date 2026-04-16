@@ -42,5 +42,5 @@ public class Teacher {
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
 	@JsonIgnore
-    private List<QrSession> qrSessions = new ArrayList<>();
+    private List<QRSession> qrSessions = new ArrayList<>();
 }

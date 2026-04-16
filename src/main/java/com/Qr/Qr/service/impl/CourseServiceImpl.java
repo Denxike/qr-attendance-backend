@@ -34,6 +34,23 @@ public class CourseServiceImpl implements CourseService {
         return courseMapper.toResponseList(courses);
     }
 
+@Override
+    public List<CourseResponse> getCoursesByTeacherEmail(String email) {
+        // One single, fast database hit!
+        List<Course> courses = courseRepository.findByTeacherUserEmail(email);
+
+        // Convert your Course entities to DTOs and return them
+        return courses.stream()
+                .map(this::mapToResponse) // Assuming you have a mapper method
+                .collect(Collectors.toList());
+    }
+    private CourseResponse mapToResponse(Course course) {
+        CourseResponse response = new CourseResponse();
+        response.setId(course.getId());
+        response.setCourseCode(course.getCourseCode());
+        response.setCourseName(course.getCourseName());
+        return response;
+    }
     @Override
     public List<CourseResponse> getCoursesByStudent(Long studentId) {
         log.info("Fetching courses for student: {}", studentId);
